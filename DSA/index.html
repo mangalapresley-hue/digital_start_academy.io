@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digital Start Academy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080B12;
+      --surface: #0E1420;
+      --card: #121926;
+      --border: rgba(255,255,255,0.06);
+      --accent: #00E5FF;
+      --accent2: #7B5EFF;
+      --accent3: #FF6B6B;
+      --gold: #FFD166;
+      --text: #EEF0F8;
+      --muted: #7B8296;
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── CURSOR ── */
+    body { cursor: none; }
+    #cursor {
+      position: fixed; width: 12px; height: 12px;
+      background: var(--accent); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transition: transform 0.15s ease, opacity 0.2s;
+      mix-blend-mode: difference;
+    }
+    #cursor-ring {
+      position: fixed; width: 40px; height: 40px;
+      border: 1px solid rgba(0,229,255,0.4); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transition: transform 0.35s ease;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025; pointer-events: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 5%;
+      background: rgba(8,11,18,0.7);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: padding 0.3s;
+    }
+    .logo {
+      font-family: var(--font-head);
+      font-size: 1.3rem; font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .logo span { color: var(--accent); }
+    .logo-badge {
+      font-size: 0.55rem; font-weight: 700; letter-spacing: 0.15em;
+      background: var(--accent2); color: #fff;
+      padding: 2px 6px; border-radius: 4px; text-transform: uppercase;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.88rem; font-weight: 500; letter-spacing: 0.02em;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--accent);
+      transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: var(--accent); color: #000;
+      padding: 0.6rem 1.4rem; border-radius: 50px;
+      font-weight: 700; font-size: 0.85rem;
+      text-decoration: none; letter-spacing: 0.03em;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,229,255,0.35); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { width: 24px; height: 2px; background: var(--text); border-radius: 2px; transition: 0.3s; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; padding: 7rem 5% 5rem;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(123,94,255,0.18) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 80% 80%, rgba(0,229,255,0.1) 0%, transparent 60%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+    }
+    .hero-content { position: relative; z-index: 1; text-align: center; max-width: 900px; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(0,229,255,0.08); border: 1px solid rgba(0,229,255,0.2);
+      color: var(--accent); font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.45rem 1.1rem; border-radius: 50px;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero-tag::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    h1 {
+      font-family: var(--font-head);
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 800; line-height: 1.05;
+      letter-spacing: -0.03em;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+    h1 .highlight {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1.15rem; color: var(--muted); font-weight: 300;
+      max-width: 600px; margin: 1.5rem auto 2.5rem;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+    .hero-btns {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: #fff; padding: 0.9rem 2.2rem;
+      border-radius: 50px; font-weight: 700; font-size: 0.95rem;
+      text-decoration: none; border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(255,255,255,0.1);
+      transform: translateX(-100%);
+      transition: transform 0.4s;
+    }
+    .btn-primary:hover::before { transform: translateX(0); }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(123,94,255,0.4); }
+    .btn-outline {
+      border: 1px solid var(--border); color: var(--text);
+      padding: 0.9rem 2.2rem; border-radius: 50px;
+      font-weight: 500; font-size: 0.95rem;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--accent); background: rgba(0,229,255,0.05); }
+    .hero-stats {
+      display: flex; gap: 3rem; justify-content: center; margin-top: 4rem;
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: var(--font-head); font-size: 2.2rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .scroll-indicator {
+      position: absolute; bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      color: var(--muted); font-size: 0.72rem; letter-spacing: 0.1em;
+      animation: fadeUp 1s 0.6s ease both;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollLine 2s ease infinite;
+    }
+    @keyframes scrollLine { 0%{transform:scaleY(0);transform-origin:top} 50%{transform:scaleY(1);transform-origin:top} 51%{transform-origin:bottom} 100%{transform:scaleY(0);transform-origin:bottom} }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTIONS COMMON ── */
+    section { position: relative; z-index: 1; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 5%; }
+    .section-pad { padding: 8rem 0; }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800; line-height: 1.1; letter-spacing: -0.02em;
+    }
+    .section-sub {
+      color: var(--muted); font-size: 1.05rem; font-weight: 300;
+      max-width: 560px; margin-top: 1rem; line-height: 1.8;
+    }
+
+    /* ── ABOUT ── */
+    #about { background: var(--surface); }
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 5rem; align-items: center;
+    }
+    .about-visual {
+      position: relative; aspect-ratio: 1;
+    }
+    .about-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 24px; padding: 2.5rem;
+      position: relative; overflow: hidden;
+      height: 100%;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .about-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+    }
+    .about-icon {
+      width: 60px; height: 60px; border-radius: 16px;
+      background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(123,94,255,0.15));
+      border: 1px solid rgba(0,229,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; margin-bottom: 1.5rem;
+    }
+    .about-card h3 {
+      font-family: var(--font-head); font-size: 1.4rem; font-weight: 700; margin-bottom: 0.8rem;
+    }
+    .about-card p { color: var(--muted); font-size: 0.95rem; }
+    .about-float {
+      position: absolute; bottom: -1.5rem; right: -1.5rem;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      border-radius: 16px; padding: 1.2rem 1.6rem;
+      font-family: var(--font-head); font-weight: 800; font-size: 1rem;
+      text-align: center; min-width: 140px;
+    }
+    .about-float small { display: block; font-weight: 400; font-size: 0.72rem; opacity: 0.8; margin-top: 2px; }
+
+    /* ── WHAT WE DO ── */
+    #what {
+      background: var(--bg);
+    }
+    .what-header { text-align: center; margin-bottom: 4rem; }
+    .what-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+    }
+    .what-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 2rem;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .what-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0,229,255,0.2);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    }
+    .what-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 30%, rgba(0,229,255,0.05), transparent 60%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .what-card:hover::after { opacity: 1; }
+    .what-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 1.2rem;
+    }
+    .i1 { background: rgba(0,229,255,0.12); }
+    .i2 { background: rgba(123,94,255,0.12); }
+    .i3 { background: rgba(255,107,107,0.12); }
+    .i4 { background: rgba(255,209,102,0.12); }
+    .i5 { background: rgba(0,229,255,0.12); }
+    .i6 { background: rgba(123,94,255,0.12); }
+    .what-card h3 {
+      font-family: var(--font-head); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.6rem;
+    }
+    .what-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.7; }
+    .what-tag {
+      display: inline-block; margin-top: 1rem;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); background: rgba(0,229,255,0.08);
+      padding: 3px 10px; border-radius: 50px;
+    }
+
+    /* ── TEAM ── */
+    #team { background: var(--surface); }
+    .team-header { text-align: center; margin-bottom: 4rem; }
+    .team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; max-width: 800px; margin: 0 auto; }
+    .team-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 24px; padding: 2.5rem;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .team-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+    }
+    .team-avatar {
+      width: 100px; height: 100px; border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; font-weight: 800; font-family: var(--font-head);
+      position: relative;
+    }
+    .av1 { background: linear-gradient(135deg, #7B5EFF, #00E5FF); }
+    .av2 { background: linear-gradient(135deg, #FF6B6B, #FFD166); }
+    .team-avatar::after {
+      content: ''; position: absolute;
+      inset: -3px; border-radius: 50%;
+      border: 2px solid transparent;
+      background: linear-gradient(135deg, var(--accent2), var(--accent)) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out; mask-composite: exclude;
+    }
+    .team-avatar {
+    width: 150px; /* Ou la taille que tu as définie */
+    height: 150px;
+    border-radius: 50%; /* Crée le cercle */
+    overflow: hidden;    /* EMPECHE LE DEBORDEMENT (C'est la clé !) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #32ccf4; /* Optionnel : pour le contour bleu */
+}
+
+.team-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Remplit le cercle sans déformer la photo */
+}
+    }
+    .team-name {
+      font-family: var(--font-head); font-size: 1.3rem; font-weight: 800; margin-bottom: 0.3rem;
+    }
+    .team-role {
+      font-size: 0.8rem; color: var(--accent); font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .team-bio { color: var(--muted); font-size: 0.9rem; line-height: 1.7; }
+    .team-socials { display: flex; gap: 0.8rem; justify-content: center; margin-top: 1.5rem; }
+    .team-socials a {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); text-decoration: none; font-size: 0.85rem;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .team-socials a:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    /* ── WHY US ── */
+    #why { background: var(--bg); }
+    .why-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 5rem; align-items: center; }
+    .why-items { display: flex; flex-direction: column; gap: 1.5rem; }
+    .why-item {
+      display: flex; gap: 1.2rem; align-items: flex-start;
+      padding: 1.5rem; border-radius: 16px;
+      border: 1px solid var(--border);
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .why-item:hover { border-color: rgba(0,229,255,0.2); background: rgba(0,229,255,0.03); }
+    .why-num {
+      font-family: var(--font-head); font-size: 2rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      min-width: 42px;
+    }
+    .why-item h4 { font-family: var(--font-head); font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .why-item p { color: var(--muted); font-size: 0.88rem; }
+    .why-visual {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 24px; padding: 3rem;
+      position: relative; overflow: hidden;
+    }
+    .why-visual::before {
+      content: ''; position: absolute; top: -50px; right: -50px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(123,94,255,0.2), transparent);
+    }
+    .testimonial-quote {
+      font-size: 3rem; color: var(--accent2); line-height: 1; margin-bottom: 1rem;
+    }
+    .testimonial-text {
+      font-size: 1.05rem; color: var(--text); line-height: 1.8;
+      font-style: italic; margin-bottom: 1.5rem;
+    }
+    .testimonial-author { display: flex; align-items: center; gap: 1rem; }
+    .t-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800;
+    }
+    .t-name { font-weight: 700; font-size: 0.9rem; }
+    .t-tag { color: var(--muted); font-size: 0.78rem; }
+    .stars { color: var(--gold); font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 1rem; }
+
+    /* ── PROGRAMME ── */
+    #programme { background: var(--surface); }
+    .prog-header { text-align: center; margin-bottom: 4rem; }
+    .prog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+    .prog-card {
+      border-radius: 20px; padding: 2rem;
+      position: relative; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .prog-card.featured {
+      background: linear-gradient(135deg, rgba(123,94,255,0.15), rgba(0,229,255,0.1));
+      border-color: rgba(0,229,255,0.3);
+    }
+    .prog-card:not(.featured) { background: var(--card); }
+    .prog-badge {
+      position: absolute; top: 1.2rem; right: 1.2rem;
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--accent2); color: #fff;
+      padding: 3px 8px; border-radius: 4px;
+    }
+    .prog-level {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 0.8rem;
+    }
+    .prog-card h3 {
+      font-family: var(--font-head); font-size: 1.3rem; font-weight: 800; margin-bottom: 0.8rem;
+    }
+    .prog-card p { color: var(--muted); font-size: 0.88rem; margin-bottom: 1.5rem; }
+    .prog-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2rem; }
+    .prog-list li {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 0.85rem; color: var(--text);
+    }
+    .prog-list li::before { content: '✓'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+    .prog-price {
+      font-family: var(--font-head); font-size: 1.8rem; font-weight: 800;
+      margin-bottom: 0.3rem;
+    }
+    .prog-price span { font-size: 0.9rem; font-weight: 400; color: var(--muted); }
+    .btn-prog {
+      display: block; width: 100%; text-align: center;
+      padding: 0.8rem; border-radius: 50px;
+      font-weight: 700; font-size: 0.88rem;
+      text-decoration: none; margin-top: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-prog.cta {
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: #fff;
+      
+    }
+    .btn-prog.outline {
+      border: 1px solid var(--border); color: var(--text);
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
+      color: #fff;
+    }
+    .btn-prog:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+
+    /* ── CTA STRIP ── */
+    #cta {
+      background: var(--bg);
+      padding: 8rem 0;
+    }
+    .cta-inner {
+      background: linear-gradient(135deg, rgba(123,94,255,0.15) 0%, rgba(0,229,255,0.08) 100%);
+      border: 1px solid rgba(0,229,255,0.2);
+      border-radius: 32px; padding: 5rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-inner::before {
+      content: ''; position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+      width: 400px; height: 400px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(123,94,255,0.2), transparent);
+      pointer-events: none;
+    }
+    .cta-inner h2 {
+      font-family: var(--font-head); font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 1rem;
+    }
+    .cta-inner p { color: var(--muted); font-size: 1.05rem; max-width: 500px; margin: 0 auto 2.5rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--surface); border-top: 1px solid var(--border);
+      padding: 4rem 0 2rem;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    .footer-brand p { color: var(--muted); font-size: 0.88rem; margin-top: 0.8rem; line-height: 1.7; max-width: 280px; }
+    .footer-col h4 {
+      font-family: var(--font-head); font-weight: 700; font-size: 0.9rem;
+      margin-bottom: 1.2rem; color: var(--text);
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-col ul a {
+      color: var(--muted); text-decoration: none; font-size: 0.88rem;
+      transition: color 0.2s;
+    }
+    .footer-col ul a:hover { color: var(--accent); }
+    .footer-bottom {
+      border-top: 1px solid var(--border); padding-top: 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--muted); font-size: 0.8rem;
+    }
+    .footer-socials { display: flex; gap: 0.8rem; }
+    .footer-socials a {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); text-decoration: none; font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .footer-socials a:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .about-grid, .why-grid { grid-template-columns: 1fr; }
+      .what-grid, .prog-grid { grid-template-columns: 1fr 1fr; }
+      .team-grid { grid-template-columns: 1fr; max-width: 400px; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .cta-inner { padding: 3rem 2rem; }
+      .hero-stats { gap: 1.5rem; }
+    }
+    @media (max-width: 600px) {
+      .what-grid, .prog-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="logo">
+    <span>DSA</span>
+    <span class="logo-badge">Academy</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#what">Nos services</a></li>
+    <li><a href="#team">Notre équipe</a></li>
+    <li><a href="#programme">Programmes</a></li>
+    <li><a href="#cta">Contact</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Rejoindre →</a>
+  <div class="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">🚀 La révolution digitale commence ici</div>
+    <h1>
+      Transforme tes<br/>
+      <span class="highlight">compétences en revenus</span><br/>
+      avec le digital
+    </h1>
+    <p class="hero-sub">
+      Digital Start Academy forme les jeunes et étudiants à monétiser leur talent grâce aux produits digitaux et au marketing digital. Ton succès commence aujourd'hui.
+    </p>
+    <div class="hero-btns">
+      <a href="#programme" class="btn-primary">Voir nos programmes</a>
+      <a href="#about" class="btn-outline">Découvrir l'académie</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num" data-target="500">0</div>
+        <div class="stat-label">Apprenants formés</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-target="12">0</div>
+        <div class="stat-label">Programmes actifs</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" data-target="95">0</div>
+        <div class="stat-label">% de satisfaction</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span>SCROLL</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container section-pad">
+    <div class="about-grid">
+      <div class="reveal">
+        <div class="section-tag">À propos de nous</div>
+        <h2 class="section-title">
+          Qui est<br/>Digital Start Academy ?
+        </h2>
+        <p class="section-sub">
+          Nous sommes une académie digitale fondée par deux passionnés du business en ligne, convaincus que chaque jeune a le potentiel de générer des revenus grâce à ses compétences numériques.
+        </p>
+        <p class="section-sub" style="margin-top:1rem;">
+          Notre mission : rendre l'éducation digitale accessible, pratique et immédiatement rentable pour la nouvelle génération africaine et francophone.
+        </p>
+        <div style="margin-top: 2rem; display:flex; gap: 1rem; flex-wrap: wrap;">
+          <div style="display:flex; align-items:center; gap:0.5rem; color: var(--muted); font-size:0.85rem;">
+            <span style="color:var(--accent)">✓</span> Formation 100% pratique
+          </div>
+          <div style="display:flex; align-items:center; gap:0.5rem; color: var(--muted); font-size:0.85rem;">
+            <span style="color:var(--accent)">✓</span> Résultats mesurables
+          </div>
+          <div style="display:flex; align-items:center; gap:0.5rem; color: var(--muted); font-size:0.85rem;">
+            <span style="color:var(--accent)">✓</span> Mentorat personnalisé
+          </div>
+        </div>
+      </div>
+      <div class="about-visual reveal reveal-delay-2">
+        <div class="about-card">
+          <div>
+            <div class="about-icon">🎯</div>
+            <h3>Notre vision</h3>
+            <p>Faire de chaque jeune un entrepreneur digital capable de vivre de ses compétences en ligne, où qu'il soit dans le monde.</p>
+          </div>
+          <div style="margin-top: 2rem;">
+            <div class="about-icon">💡</div>
+            <h3>Notre approche</h3>
+            <p>Formation par la pratique, cas réels, projets concrets et accompagnement continu pour garantir des résultats tangibles dès les premières semaines.</p>
+          </div>
+          <div class="about-float">
+            🏆 Top Academy<br/>
+            <small>Francophone 2024</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT WE DO -->
+<section id="what">
+  <div class="container section-pad">
+    <div class="what-header reveal">
+      <div class="section-tag">Ce qu'on fait</div>
+      <h2 class="section-title">Nos domaines d'expertise</h2>
+      <p class="section-sub" style="margin: 1rem auto 0;">
+        Des formations conçues pour créer de vraies opportunités de revenus, pas juste des théories.
+      </p>
+    </div>
+    <div class="what-grid">
+      <div class="what-card reveal">
+        <div class="what-icon i1">📦</div>
+        <h3>Produits Digitaux</h3>
+        <p>Crée et vends tes propres ebooks, templates, cours en ligne, presets et autres produits numériques à fort potentiel de revenu passif.</p>
+        <span class="what-tag">Revenu passif</span>
+      </div>
+      <div class="what-card reveal reveal-delay-1">
+        <div class="what-icon i2">📣</div>
+        <h3>Marketing Digital</h3>
+        <p>Maîtrise les fondamentaux du marketing moderne : réseaux sociaux, publicité payante, email marketing et growth hacking.</p>
+        <span class="what-tag">Stratégie</span>
+      </div>
+      <div class="what-card reveal reveal-delay-2">
+        <div class="what-icon i3">🛒</div>
+        <h3>Dropshipping & E-commerce</h3>
+        <p>Lance ta boutique en ligne sans stock, de la sélection produit à la publicité en passant par la logistique.</p>
+        <span class="what-tag">Business</span>
+      </div>
+      <div class="what-card reveal reveal-delay-1">
+        <div class="what-icon i4">✍️</div>
+        <h3>Copywriting & Personal Branding</h3>
+        <p>Apprends à écrire pour vendre et à construire une marque personnelle qui attire clients et opportunités automatiquement.</p>
+        <span class="what-tag">Influence</span>
+      </div>
+      <div class="what-card reveal reveal-delay-2">
+        <div class="what-icon i5">📱</div>
+        <h3>Création de Contenu</h3>
+        <p>Développe une présence digitale forte sur Instagram, TikTok, YouTube et monétise ton audience rapidement.</p>
+        <span class="what-tag">Contenu</span>
+      </div>
+      <div class="what-card reveal reveal-delay-3">
+        <div class="what-icon i6">🤖</div>
+        <h3>IA & Automatisation</h3>
+        <p>Utilise l'intelligence artificielle pour automatiser tes processus, créer du contenu plus vite et multiplier ta productivité.</p>
+        <span class="what-tag">Innovation</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="container section-pad">
+    <div class="team-header reveal">
+      <div class="section-tag">L'équipe fondatrice</div>
+      <h2 class="section-title">Les cerveaux derrière DSA</h2>
+      <p class="section-sub" style="margin: 1rem auto 0;">
+        Deux entrepreneurs passionnés, des résultats prouvés,une seule mission : ton succès.
+      </p>
+    </div>
+    <div class="team-grid">
+      <div class="team-card reveal">
+        <div class="team-avatar av1"><img src="img/WhatsApp Image 2026-05-14 at 13.30.03.jpeg" alt="Profile"> </div>
+        <div class="team-name">OSSETE Steve</div>
+        <div class="team-role">Co-Fondateur & Expert Marketing</div>
+        <p class="team-bio">
+          Expert en marketing digital et stratégie de croissance. Passionné par l'entrepreneuriat depuis des années, il a aidé des dizaines de jeunes à lancer et scaler leur business en ligne avec des méthodes éprouvées.
+        </p>
+        <div class="team-socials">
+          <a href="https://www.tiktok.com/@digitalstartacademy1?_r=1&_t=ZS-96LxBfoKUvi" title="Tiktok">Tiktok</a>
+          <a href="https://www.instagram.com/digit.steve?igsh=djAxY2Y4NWYycXg5&utm_source=qr" title="Instagram">insta</a>
+          <a href="https://www.facebook.com/share/1C215FxUod/?mibextid=wwXIfr" title="Facebook">FB</a>
+        </div>
+      </div>
+      <div class="team-card reveal reveal-delay-2">
+        <div class="team-avatar av2"><img src="img\GD_lwEyNGgyQcxl6-iozB.png"></div>
+        <div class="team-name">MANGALA Presley</div>
+        <div class="team-role">Co-Fondateur & Expert Produits Digitaux</div>
+        <p class="team-bio">
+          Spécialiste des produits digitaux et du e-commerce, il accompagne les jeunes dans la création de sources de revenus durables. Son parcours autodidacte est une source d'inspiration pour toute la communauté DSA.
+        </p>
+        <div class="team-socials">
+          <a href="https://www.tiktok.com/@mg_presley" title="Tiktok">Tiktok</a>
+          <a href="https://www.instagram.com/mg_presley?igsh=MTVxcGJ0aHdkYWNvMw%3D%3D&utm_source=qr" title="Instagram">insta</a>
+          <a href="https://linktr.ee/presleymg" title="Facebook">FB</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="container section-pad">
+    <div class="why-grid">
+      <div>
+        <div class="section-tag reveal">Pourquoi nous choisir</div>
+        <h2 class="section-title reveal" style="margin-bottom:2.5rem;">Ce qui nous différencie</h2>
+        <div class="why-items">
+          <div class="why-item reveal">
+            <div class="why-num">01</div>
+            <div>
+              <h4>Formation orientée résultats</h4>
+              <p>Pas de théorie vaine. Chaque module est conçu pour produire un résultat concret et mesurable dans ta vie.</p>
+            </div>
+          </div>
+          <div class="why-item reveal reveal-delay-1">
+            <div class="why-num">02</div>
+            <div>
+              <h4>Communauté active & bienveillante</h4>
+              <p>Rejoins une communauté de jeunes entrepreneurs qui s'entraident, partagent et grandissent ensemble.</p>
+            </div>
+          </div>
+          <div class="why-item reveal reveal-delay-2">
+            <div class="why-num">03</div>
+            <div>
+              <h4>Accès à vie aux formations</h4>
+              <p>Tu paies une fois et tu accèdes à toutes les mises à jour. Le digital évolue, tes formations aussi.</p>
+            </div>
+          </div>
+          <div class="why-item reveal reveal-delay-3">
+            <div class="why-num">04</div>
+            <div>
+              <h4>Mentorat direct des fondateurs</h4>
+              <p>Accès à des sessions live avec nos fondateurs pour répondre à tes questions et accélérer ta progression.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="why-visual reveal reveal-delay-2">
+        <div class="stars">★★★★★</div>
+        <div class="testimonial-quote">"</div>
+        <p class="testimonial-text">
+          Avant DSA, je savais que j'avais des compétences mais je ne savais pas comment les monétiser. En 6 semaines, j'ai lancé mon premier produit digital et généré mes premiers 150 000 FCFA en ligne. Incroyable !
+        </p>
+        <div class="testimonial-author">
+          <div class="t-avatar">A</div>
+          <div>
+            <div class="t-name">Arielle Nkoa</div>
+            <div class="t-tag">Etudiante · Yaoundé 🇨🇲</div>
+          </div>
+        </div>
+        <div class="why-visual reveal reveal-delay-2">
+        <div class="stars">★★★★★</div>
+        <div class="testimonial-quote">"</div>
+        <p class="testimonial-text">
+          L'initiative est juste incroyable, la formation est très clair et bien détaillé, de plus il permet de gagner en compétences et en revenu, c'est juste amazing, vraiment je le recommande
+        </p>
+        <div class="testimonial-author">
+          <div class="t-avatar">L</div>
+          <div>
+            <div class="t-name">Luce.E</div>
+            <div class="t-tag">Etudiante · Brazzaville.CG</div>
+          </div>
+        </div>
+        <div style="height: 2px; background: var(--border); margin: 2rem 0;"></div>
+        <div class="stars">★★★★★</div>
+        <div class="testimonial-quote">"</div>
+        <p class="testimonial-text">
+          Les formateurs sont disponibles, le contenu est ultra pratique. J'ai enfin compris comment fonctionne vraiment le marketing digital. Je recommande à 100% !
+        </p>
+        <div class="testimonial-author">
+          <div class="t-avatar" style="background: linear-gradient(135deg, #FF6B6B, #FFD166);">J</div>
+          <div>
+            <div class="t-name">Junior Epée</div>
+            <div class="t-tag">Commerçant · Cotonou BN</div>
+          </div>
+        </div>
+      </div>
+      <p class="testimonial-text">
+          La formation est très bien détaillé pour mettre en pratique et generé mes premiers revenus en ligne. Merci à vous 
+        </p>
+        <div class="testimonial-author">
+          <div class="t-avatar" style="background: linear-gradient(135deg, #390ff3, #FFD166);">SM</div>
+          <div>
+            <div class="t-name">Stone.M</div>
+            <div class="t-tag">Freelancer · Pointe-Noire CG</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMME -->
+<section id="programme">
+  <div class="container section-pad">
+    <div class="prog-header reveal">
+      <div class="section-tag">Nos programmes</div>
+      <h2 class="section-title">Choisis ton parcours</h2>
+      <p class="section-sub" style="margin: 1rem auto 0;">
+        Des formations adaptées à ton niveau et à tes objectifs, du débutant à l'expert.
+      </p>
+    </div>
+    <div class="prog-grid">
+      <div class="prog-card reveal">
+        <div class="prog-level">Débutant</div>
+        <h3>Starter Pack</h3>
+        <p>Idéal pour ceux qui débutent et veulent comprendre les bases du business digital.</p>
+        <ul class="prog-list">
+          <li>Introduction au marketing digital</li>
+          <li>Créer son premier produit digital</li>
+          <li>Personal branding basique</li>
+          <li>Accès communauté Discord</li>
+          <li>Accès limité</li>
+        </ul>
+        <div class="prog-price">Clic en dessous <span>/ accès limité</span></div>
+        <a href="https://chariow.makeup/r1l76ok7z2" class="btn-prog outline">Obtenir mon pack</a>
+      </div>
+      <div class="prog-card featured reveal reveal-delay-1">
+        <div class="prog-badge">🔥 Populaire</div>
+        <div class="prog-level">Intermédiaire</div>
+        <h3>Digital Pro Academy</h3>
+        <p>Le programme complet pour lancer et scaler ton business digital en 60 jours.</p>
+        <ul class="prog-list">
+          <li>Marketing digital avancé</li>
+          <li>Création & vente de produits digitaux</li>
+          <li>Publicité Facebook & Instagram</li>
+          <li>Email marketing & funnels</li>
+          <li>Copywriting & vente</li>
+          <li>Accès vie + mises à jour</li>
+          <li>Mentorat hebdomadaire live</li>
+        </ul>
+        <div class="prog-price">offre standard <span>/accès personnalisé </span></div>
+        <a href="https://chariow.makeup/5mx3pj4u07" class="btn-prog cta">S'inscrire maintenant →</a>
+      </div>
+      <div class="prog-card reveal reveal-delay-2">
+        <div class="prog-level">Expert</div>
+        <h3>Elite Mastermind</h3>
+        <p>Pour ceux qui veulent scaler sérieusement avec un accompagnement sur mesure.</p>
+        <ul class="prog-list">
+          <li>Tout du Digital Pro +</li>
+          <li>Stratégies e-commerce avancées</li>
+          <li>IA & automatisation</li>
+          <li>Coaching 1-on-1 mensuel</li>
+          <li>Accès réseau VIP</li>
+        </ul>
+        <h5>Seulement 5 accompagnement dispo pour ce mois!</h5>
+        <div class="prog-price">Sur devis <span>/ sur candidature</span></div>
+        <a href="https://chariow.makeup/nm4xn034ci" class="btn-prog outline">Candidater avant fermeture →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="cta-inner reveal">
+      <div class="section-tag" style="margin-bottom:1.5rem;">Prêt à démarrer ?</div>
+      <h2>
+        Rejoins la <span style="background: linear-gradient(135deg, var(--accent2), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Digital Start Academy</span><br/>
+        dès aujourd'hui
+      </h2>
+      <p>
+        Des centaines de jeunes ont déjà transformé leur vie. C'est ton tour. Rejoins la communauté, accède aux formations et commence à générer tes premiers revenus en ligne.
+      </p>
+      <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+        <a href="https://wa.me/+242053686578" class="btn-primary" style="display:inline-flex; align-items:center; gap:0.5rem;">
+          💬 Nous contacter sur WhatsApp
+        </a>
+        <a href="https://digitalstaracademy.mychariow.shop" class="btn-outline" style="display:inline-flex; align-items:center; gap:0.5rem;">
+          ✉️ Parcourir nos produits
+        </a>
+      </div><br><br>
+      <h4>
+        Aucune carte bancaire requise pour commencer · Accès immédiat · Support 7j/7</h4>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo" style="margin-bottom:1rem;">
+          <span>DSA</span>
+          <span class="logo-badge">Academy</span>
+        </div>
+        <p>La première académie digitale francophone dédiée à la monétisation des compétences numériques pour les jeunes et étudiants.</p>
+        <div class="footer-socials" style="margin-top:1.5rem;">
+          <a href="#">ig</a>
+          <a href="#">in</a>
+          <a href="#">𝕏</a>
+          <a href="#">yt</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Formation</h4>
+        <ul>
+          <li><a href="#">Marketing Digital</a></li>
+          <li><a href="#">Produits Digitaux</a></li>
+          <li><a href="#">E-commerce</a></li>
+          <li><a href="#">Copywriting</a></li>
+          <li><a href="#">IA & Automatisation</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Académie</h4>
+        <ul>
+          <li><a href="#about">À propos</a></li>
+          <li><a href="#team">Notre équipe</a></li>
+          <li><a href="#programme">Programmes</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Témoignages</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="#">WhatsApp</a></li>
+          <li><a href="#">Email</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 Digital Start Academy. Tous droits réservés.</span>
+      <span style="color: var(--muted);">Fait avec ❤️ pour la jeunesse africaine</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  /* ── CURSOR ── */
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animateCursor() {
+    cur.style.left = mx - 6 + 'px'; cur.style.top = my - 6 + 'px';
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx - 20 + 'px'; ring.style.top = ry - 20 + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+  document.querySelectorAll('a, button, .what-card, .team-card, .prog-card').forEach(el => {
+    el.addEventListener('mouseenter', () => { cur.style.transform = 'scale(2.5)'; ring.style.transform = 'scale(1.5)'; });
+    el.addEventListener('mouseleave', () => { cur.style.transform = 'scale(1)'; ring.style.transform = 'scale(1)'; });
+  });
+
+  /* ── COUNTER ANIMATION ── */
+  function animateCounter(el) {
+    const target = +el.dataset.target;
+    const suffix = el.nextSibling ? '' : '';
+    let current = 0;
+    const step = target / 60;
+    const timer = setInterval(() => {
+      current += step;
+      if (current >= target) { current = target; clearInterval(timer); }
+      el.textContent = Math.floor(current) + (el.dataset.target === '95' ? '%' : '+');
+    }, 25);
+  }
+
+  /* ── SCROLL REVEAL ── */
+  const reveals = document.querySelectorAll('.reveal');
+  const stats = document.querySelectorAll('.stat-num');
+  let counted = false;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => observer.observe(r));
+
+  const statObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !counted) {
+      counted = true;
+      stats.forEach(s => animateCounter(s));
+    }
+  }, { threshold: 0.5 });
+  if (stats[0]) statObs.observe(stats[0].parentElement.parentElement);
+
+  /* ── NAVBAR SCROLL ── */
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').style.padding =
+      window.scrollY > 50 ? '0.8rem 5%' : '1.2rem 5%';
+  });
+
+  /* ── MOBILE MENU (simple) ── */
+  function toggleMenu() {
+    const links = document.querySelector('.nav-links');
+    const cta = document.querySelector('.nav-cta');
+    if (links) {
+      links.style.display = links.style.display === 'flex' ? 'none' : 'flex';
+      links.style.flexDirection = 'column';
+      links.style.position = 'absolute';
+      links.style.top = '70px'; links.style.left = '0'; links.style.right = '0';
+      links.style.background = 'rgba(8,11,18,0.98)';
+      links.style.padding = '2rem'; links.style.gap = '1.5rem';
+      links.style.backdropFilter = 'blur(20px)';
+    }
+  }
+</script>
+</body>
+</html>
